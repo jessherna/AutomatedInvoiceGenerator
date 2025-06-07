@@ -102,3 +102,20 @@ def SendInvoice(emailAddr: str, filePath: str) -> None:
             raise
 
     mail.Send()
+
+def GenerateAllInvoices(path_to_orders: str) -> None:
+    """
+    Full pipeline: load all orders, format each invoice, export to PDF,
+    and send via Outlook.
+    """
+    orders = LoadOrders(path_to_orders)
+    for order in orders:
+        # 1) Format
+        wb = FormatInvoice(order)
+
+        # 2) Export (use OrderID as base filename)
+        base = f"invoice_{order.get('OrderID', '')}"
+        pdf_path = ExportInvoice(wb, base, format="pdf")
+
+        # 3) Send
+        SendInvoice(order.get("Email", ""), pdf_path)

@@ -75,3 +75,30 @@ def ExportInvoice(workbook: Workbook, output_path: str, format: str = "xlsx") ->
 
     else:
         raise ValueError(f"Unsupported format: {format}")
+    
+def SendInvoice(emailAddr: str, filePath: str) -> None:
+    """
+    Open Outlook, create a mail item, attach the file at filePath, and send to emailAddr.
+    """
+    try:
+        from win32com.client import Dispatch
+    except ImportError:
+        raise RuntimeError("SendInvoice requires pywin32 and Windows COM")
+
+    outlook = Dispatch("Outlook.Application")
+    mail = outlook.CreateItem(0)
+    mail.To = emailAddr
+    mail.Subject = "Your Invoice from Contoso Logistics"
+    mail.Body = "Please find your invoice attached."
+
+    # Attach file (fallback to mail.Attachments_Add if Attachments.Add doesn't exist)
+    try:
+        mail.Attachments.Add(filePath)
+    except AttributeError:
+        # e.g. DummyMailItem in tests uses Attachments_Add
+        if hasattr(mail, "Attachments_Add"):
+            mail.Attachments_Add(filePath)
+        else:
+            raise
+
+    mail.Send()

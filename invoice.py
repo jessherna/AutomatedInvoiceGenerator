@@ -37,3 +37,41 @@ def FormatInvoice(order):
     # Total
     ws.cell(row=8, column=4, value=line_total)
     return wb
+
+def ExportInvoice(workbook: Workbook, output_path: str, format: str = "xlsx") -> str:
+    """
+    Save `workbook` to disk:
+      - as .xlsx if format=="xlsx"
+      - as .pdf using Excel COM if format=="pdf"
+    Returns the full path of the generated file.
+    """
+    if format == "xlsx":
+        file = output_path + ".xlsx"
+        workbook.save(file)
+        return file
+
+    elif format == "pdf":
+        try:
+            import os
+            from win32com.client import Dispatch
+
+            # first save a temporary XLSX to open in COM
+            tmp_xlsx = output_path + "_tmp.xlsx"
+            workbook.save(tmp_xlsx)
+
+            excel = Dispatch("Excel.Application")
+            excel.Visible = False
+            wb_com = excel.Workbooks.Open(os.path.abspath(tmp_xlsx))
+            wb_com.ExportAsFixedFormat(0, os.path.abspath(output_path + ".pdf"))
+            wb_com.Close(False)
+            excel.Quit()
+
+            os.remove(tmp_xlsx)
+            return output_path + ".pdf"
+        except ImportError:
+            raise RuntimeError("PDF export requires pywin32 and Windows COM")
+        except Exception as e:
+            raise RuntimeError(f"PDF export failed: {e}")
+
+    else:
+        raise ValueError(f"Unsupported format: {format}")

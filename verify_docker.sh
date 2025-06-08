@@ -8,8 +8,8 @@ docker build -t invoice-generator .
 echo "✅ Docker build successful"
 
 echo "🧪 Running basic container test..."
-# Test Python imports
-docker run --rm invoice-generator python -c "import openpyxl; import PIL; import win32com.client; print('✅ Python imports working')"
+# Test Python imports (only cross-platform compatible ones)
+docker run --rm invoice-generator python -c "import openpyxl; import PIL; print('✅ Python imports working')"
 
 echo "🧪 Running pytest..."
 # Run tests

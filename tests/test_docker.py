@@ -78,11 +78,16 @@ def test_basic_invoice_generation():
     workbook = FormatInvoice(sample_order)
     assert workbook is not None, "Invoice formatting failed"
 
+    # Create test_output directory if it doesn't exist
+    os.makedirs("test_output", exist_ok=True)
+
     # Test export to XLSX
     output_path = "test_output/invoice_test"
     xlsx_file = ExportInvoice(workbook, output_path, format="xlsx")
-    assert os.path.exists(xlsx_file), "XLSX export failed"
+    assert os.path.exists(xlsx_file), "XLSX file was not created"
 
     # Clean up
-    if os.path.exists(xlsx_file):
-        os.remove(xlsx_file) 
+    try:
+        os.remove(xlsx_file)
+    except:
+        pass 

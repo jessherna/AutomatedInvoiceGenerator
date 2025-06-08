@@ -5,6 +5,7 @@ from openpyxl.styles import Alignment, Font, Border, Side
 import os
 from openpyxl.worksheet.page import PageMargins
 from datetime import datetime
+import platform
 
 
 def LoadOrders(path: str) -> list[dict]:
@@ -272,32 +273,110 @@ def ExportInvoice(workbook: Workbook, output_path: str, format: str = "xlsx") ->
     else:
         raise ValueError(f"Unsupported format: {format}")
     
-def SendInvoice(emailAddr: str, filePath: str) -> None:
+def SendInvoice(emailAddr: str, filePath: str, cc: str = None, additional_attachments: list = None) -> None:
     """
     Open Outlook, create a mail item, attach the file at filePath, and send to emailAddr.
+    
+    Args:
+        emailAddr: Email address of the recipient
+        filePath: Path to the invoice file to attach
+        cc: Optional CC recipient email address
+        additional_attachments: Optional list of additional file paths to attach
     """
+    if platform.system() != "Windows":
+        raise RuntimeError("Email sending is only supported on Windows")
+
     try:
         from win32com.client import Dispatch
     except ImportError:
         raise RuntimeError("SendInvoice requires pywin32 and Windows COM")
 
-    outlook = Dispatch("Outlook.Application")
-    mail = outlook.CreateItem(0)
-    mail.To = emailAddr
-    mail.Subject = "Your Invoice from Contoso Logistics"
-    mail.Body = "Please find your invoice attached."
+    # Validate and normalize file paths
+    def validate_path(path):
+        abs_path = os.path.abspath(path)
+        if not os.path.exists(abs_path):
+            raise FileNotFoundError(f"File not found: {abs_path}")
+        return abs_path
 
-    # Attach file (fallback to mail.Attachments_Add if Attachments.Add doesn't exist)
     try:
-        mail.Attachments.Add(filePath)
-    except AttributeError:
-        # e.g. DummyMailItem in tests uses Attachments_Add
-        if hasattr(mail, "Attachments_Add"):
-            mail.Attachments_Add(filePath)
-        else:
-            raise
+        # Validate main invoice file
+        abs_file_path = validate_path(filePath)
+        
+        # Ensure we're only attaching PDF files
+        if not abs_file_path.lower().endswith('.pdf'):
+            raise ValueError("Only PDF files can be attached to the email")
+        
+        outlook = Dispatch("Outlook.Application")
+        mail = outlook.CreateItem(0)
+        mail.To = emailAddr
+        if cc:
+            mail.CC = cc
 
-    mail.Send()
+        # Extract invoice number from filename
+        invoice_number = os.path.basename(filePath).split('.')[0]
+        
+        mail.Subject = f"Invoice {invoice_number} - Contoso Logistics"
+        
+        # Create a professional email body
+        email_body = f"""Dear Valued Customer,
+
+I hope this email finds you well. Please find attached Invoice {invoice_number} for your recent order with Contoso Logistics.
+
+Invoice Details:
+- Invoice Number: {invoice_number}
+- Date: {datetime.now().strftime('%B %d, %Y')}
+
+Payment Terms:
+- Payment is due within 15 days from invoice date
+- Payment methods accepted: Bank Transfer, Credit Card
+- For wire transfer details, please refer to the invoice
+
+If you have any questions regarding this invoice or need any clarification, please don't hesitate to contact our accounting department at accounting@contosologistics.com or call us at (416) 555-0123.
+
+Thank you for your business.
+
+Best regards,
+Contoso Logistics
+Accounting Department
+Phone: (416) 555-0123
+Email: accounting@contosologistics.com
+
+---
+This is an automated message. Please do not reply directly to this email.
+For immediate assistance, please contact our customer service department."""
+
+        mail.Body = email_body
+        mail.HTMLBody = email_body.replace('\n', '<br>')  # Convert to HTML format
+
+        # Attach main invoice file
+        try:
+            mail.Attachments.Add(abs_file_path)
+        except AttributeError:
+            # e.g. DummyMailItem in tests uses Attachments_Add
+            if hasattr(mail, "Attachments_Add"):
+                mail.Attachments_Add(abs_file_path)
+            else:
+                raise
+
+        # Attach any additional files (only PDFs)
+        if additional_attachments:
+            for attachment in additional_attachments:
+                abs_attachment_path = validate_path(attachment)
+                if not abs_attachment_path.lower().endswith('.pdf'):
+                    continue  # Skip non-PDF files
+                try:
+                    mail.Attachments.Add(abs_attachment_path)
+                except AttributeError:
+                    if hasattr(mail, "Attachments_Add"):
+                        mail.Attachments_Add(abs_attachment_path)
+                    else:
+                        raise
+
+        mail.Send()
+    except FileNotFoundError as e:
+        raise RuntimeError(f"Failed to send invoice: File not found - {str(e)}")
+    except Exception as e:
+        raise RuntimeError(f"Failed to send invoice: {str(e)}")
 
 def GenerateAllInvoices(path_to_orders: str) -> None:
     """

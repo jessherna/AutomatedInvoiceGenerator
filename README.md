@@ -90,6 +90,53 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **GenerateAllInvoices**: One-click pipeline to process all orders  
 - Fully covered by **pytest** tests under `tests/`
 
+## Email Integration
+
+The application includes Outlook email integration for sending invoices directly from the application. The email functionality is implemented in `email_utils.py` and includes the following features:
+
+- Direct integration with Microsoft Outlook
+- Support for multiple recipients and CC recipients
+- File attachment support
+- Comprehensive error handling and logging
+- Unit tests for all email functionality
+
+### Example Usage
+
+```python
+from email_utils import OutlookEmailSender
+
+# Create email sender instance
+sender = OutlookEmailSender()
+
+# Connect to Outlook
+if sender.connect():
+    # Send email with attachment
+    sender.send_email(
+        to_recipients=["recipient@example.com"],
+        subject="Invoice #123",
+        body="Please find attached the invoice.",
+        attachments=["invoice.pdf"]
+    )
+```
+
+For a complete example, see `examples/send_email_example.py`.
+
+### Requirements for Email Functionality
+- Windows OS
+- Microsoft Outlook installed
+- pywin32 package (included in requirements.txt)
+
+## Screenshots
+
+### Email Configuration
+![Email Configuration](screenshots/test-email.png)
+
+### Password Setup
+![Password Setup](screenshots/test-pass.png)
+
+### Sample Invoice Generation
+![Sample Invoice](screenshots/execute_sample-invoice.png)
+
 ## Application Architecture
 
 Here's an overview of the application's components and their interactions:

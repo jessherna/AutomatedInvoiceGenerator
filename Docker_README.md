@@ -43,6 +43,17 @@ docker-compose up app
 docker-compose up test
 ```
 
+## Screenshots
+
+### Email Configuration
+![Email Configuration](../screenshots/test-email.png)
+
+### Password Setup
+![Password Setup](../screenshots/test-pass.png)
+
+### Sample Invoice Generation
+![Sample Invoice](../screenshots/execute_sample-invoice.png)
+
 ## Platform-Specific Features
 
 ### Windows Environment

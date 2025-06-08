@@ -127,10 +127,10 @@ if sender.connect():
 ## Screenshots
 
 ### Sample Invoice Sent Through Email
-![Email Configuration](screenshots/invoice_INV-20250608-0002.png)
+![Email Configuration](screenshots/test-email.png)
 
 ### Sample Invoice Generation
-![Sample Invoice](screenshots/execute_sample-invoice.png)
+![Sample Invoice](screenshots/invoice_INV-20250608-0002.png)
 
 ## Application Architecture
 

@@ -8,6 +8,29 @@ A Python-based application for automating the generation of professional invoice
 - **Professional Invoice Formatting**: Generates clean, professional-looking invoices
 - **Multiple Output Formats**: Supports both Excel (.xlsx) and PDF output
 - **Automated Email Delivery**: Sends generated invoices directly to customers
+  *Example Usage:*
+  ```python
+  from invoice import SendInvoice
+  import platform
+
+  # Assuming pdf_path and invoice_filename_base are already defined
+  # e.g., pdf_path = "screenshots/invoice_INV-20240320-0001.pdf"
+  # invoice_filename_base = "invoice_INV-20240320-0001"
+
+  if platform.system() == "Windows":
+      try:
+          SendInvoice(
+              emailAddr="recipient@example.com",
+              filePath=pdf_path,
+              cc="accounting@example.com", # Optional CC recipient
+              additional_attachments=[f"screenshots/{invoice_filename_base}.xlsx"] # Optional additional attachments
+          )
+          print("Sent invoice successfully!")
+      except Exception as e:
+          print(f"Failed to send invoice: {str(e)}")
+  else:
+      print("Note: Email sending is only available on Windows systems")
+  ```
 - **Customizable Templates**: Includes company logo and customizable styling
 - **Tax Calculation**: Automatically calculates GST (5%)
 - **PO Number Management**: Automated PO number generation and tracking

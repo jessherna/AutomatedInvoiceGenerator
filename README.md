@@ -92,7 +92,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Email Integration
 
-The application includes Outlook email integration for sending invoices directly from the application. The email functionality is implemented in `email_utils.py` and includes the following features:
+The application includes Outlook email integration for sending invoices directly from the application. The email functionality is implemented in `invoice.py` and includes the following features:
 
 - Direct integration with Microsoft Outlook
 - Support for multiple recipients and CC recipients
@@ -103,20 +103,26 @@ The application includes Outlook email integration for sending invoices directly
 ### Example Usage
 
 ```python
-from email_utils import OutlookEmailSender
+from invoice import SendInvoice
+import platform
 
-# Create email sender instance
-sender = OutlookEmailSender()
+# Assuming pdf_path and invoice_filename_base are already defined
+# e.g., pdf_path = "screenshots/invoice_INV-20240320-0001.pdf"
+# invoice_filename_base = "invoice_INV-20240320-0001"
 
-# Connect to Outlook
-if sender.connect():
-    # Send email with attachment
-    sender.send_email(
-        to_recipients=["recipient@example.com"],
-        subject="Invoice #123",
-        body="Please find attached the invoice.",
-        attachments=["invoice.pdf"]
-    )
+if platform.system() == "Windows":
+    try:
+        SendInvoice(
+            emailAddr="recipient@example.com",
+            filePath=pdf_path,
+            cc="accounting@example.com", # Optional CC recipient
+            additional_attachments=[f"screenshots/{invoice_filename_base}.xlsx"] # Optional additional attachments
+        )
+        print("Sent invoice successfully!")
+    except Exception as e:
+        print(f"Failed to send invoice: {str(e)}")
+else:
+    print("Note: Email sending is only available on Windows systems")
 ```
 
 ### Requirements for Email Functionality

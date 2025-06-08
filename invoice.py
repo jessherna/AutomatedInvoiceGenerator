@@ -375,6 +375,9 @@ For immediate assistance, please contact our customer service department."""
         mail.Send()
     except FileNotFoundError as e:
         raise RuntimeError(f"Failed to send invoice: File not found - {str(e)}")
+    except ValueError as e:
+        # Preserve ValueError exceptions
+        raise
     except Exception as e:
         raise RuntimeError(f"Failed to send invoice: {str(e)}")
 
@@ -429,6 +432,35 @@ def get_next_po_number() -> str:
     
     return f"PO-{today}-{counter:04d}"
 
+def get_next_invoice_number() -> str:
+    """
+    Generates a sequential invoice number in the format INV-YYYYMMDD-XXXX
+    where XXXX is a sequential number that resets daily.
+    
+    Returns:
+        str: A formatted invoice number
+    """
+    today = datetime.now().strftime("%Y%m%d")
+    # In a real application, you would store and retrieve this from a database
+    # For now, we'll use a simple file-based approach
+    counter_file = "invoice_counter.txt"
+    
+    try:
+        with open(counter_file, "r") as f:
+            last_date, counter = f.read().strip().split("-")
+            counter = int(counter)
+            if last_date != today:
+                counter = 1
+            else:
+                counter += 1
+    except (FileNotFoundError, ValueError):
+        counter = 1
+    
+    with open(counter_file, "w") as f:
+        f.write(f"{today}-{counter}")
+    
+    return f"INV-{today}-{counter:04d}"
+
 def TransformOrder(order: dict, bill_to_data: dict) -> dict:
     """
     Transforms a basic order dict into the format expected by FormatInvoice.
@@ -451,8 +483,8 @@ def TransformOrder(order: dict, bill_to_data: dict) -> dict:
         "UnitPrice": order["Price"]
     }]
     
-    # Generate invoice number (you may want to implement a more sophisticated numbering system)
-    invoice_number = f"INV-{order['CustomerID']}-{datetime.now().strftime('%Y%m%d')}"
+    # Generate sequential invoice number
+    invoice_number = get_next_invoice_number()
     
     # Calculate due date (15 days from now)
     due_date = datetime.now().replace(day=datetime.now().day + 15)

@@ -119,8 +119,6 @@ if sender.connect():
     )
 ```
 
-For a complete example, see `examples/send_email_example.py`.
-
 ### Requirements for Email Functionality
 - Windows OS
 - Microsoft Outlook installed
@@ -128,11 +126,8 @@ For a complete example, see `examples/send_email_example.py`.
 
 ## Screenshots
 
-### Email Configuration
+### Sample Invoice Sent Through Email
 ![Email Configuration](screenshots/test-email.png)
-
-### Password Setup
-![Password Setup](screenshots/test-pass.png)
 
 ### Sample Invoice Generation
 ![Sample Invoice](screenshots/execute_sample-invoice.png)

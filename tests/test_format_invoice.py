@@ -65,3 +65,37 @@ def test_format_invoice_header_and_items(sample_order):
     
     assert total_row is not None, "Could not find TOTAL row in invoice"
     assert ws.cell(row=total_row, column=6).value == expected_with_gst
+
+def test_get_next_invoice_number(tmp_path):
+    """Test that invoice numbers are sequential and reset daily"""
+    from invoice import get_next_invoice_number
+    import os
+    from datetime import datetime
+    
+    # Change to temp directory for testing
+    original_dir = os.getcwd()
+    os.chdir(tmp_path)
+    
+    try:
+        # First call should start with 1
+        inv1 = get_next_invoice_number()
+        assert inv1.startswith("INV-")
+        assert inv1.endswith("-0001")
+        
+        # Second call should increment
+        inv2 = get_next_invoice_number()
+        assert inv2.endswith("-0002")
+        
+        # Third call should increment again
+        inv3 = get_next_invoice_number()
+        assert inv3.endswith("-0003")
+        
+        # Verify the counter file exists and has correct format
+        with open("invoice_counter.txt", "r") as f:
+            date, counter = f.read().strip().split("-")
+            assert date == datetime.now().strftime("%Y%m%d")
+            assert int(counter) == 3
+            
+    finally:
+        # Clean up and return to original directory
+        os.chdir(original_dir)

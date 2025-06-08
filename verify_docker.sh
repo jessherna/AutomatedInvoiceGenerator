@@ -1,3 +1,4 @@
+clear
 #!/bin/bash
 
 echo "🔍 Verifying Docker setup..."

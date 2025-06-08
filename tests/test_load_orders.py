@@ -7,8 +7,8 @@ def test_load_orders(tmp_path):
     """
     Test that the LoadOrders function can load the orders from the sample file.
     """
-    sample_src = Path("tests/data/orders_sample.xlsx")
-    sample = tmp_path / "orders_sample.xlsx"
+    sample_src = Path("tests/data/orders_sample_with_id.xlsx")
+    sample = tmp_path / "orders_sample_with_id.xlsx"
     shutil.copy(sample_src, sample)
 
     # Act

@@ -1,19 +1,21 @@
-FROM python:3.11-slim
+FROM python:3.11-slim as base
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libreoffice \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# 1) Install only the deps you need for Issue 6
+# Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 2) Copy your application code explicitly
-COPY invoice.py .
+# Copy application code
+COPY . .
 
-# 3) Copy tests (and any data folders)
-COPY tests/ tests/
-COPY tests/data/ tests/data/
-
-# 4) Add current directory to Python path
+# Add current directory to Python path
 ENV PYTHONPATH=/app
 
-# 5) Run pytest against /app
-CMD ["pytest", "-q", "--maxfail=1"]
+# Default command (can be overridden)
+CMD ["python", "sample_invoice.py"]

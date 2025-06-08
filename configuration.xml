@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Configuration>
+    <Add OfficeClientEdition="64" Channel="PerpetualVL2019">
+        <Product ID="ProPlus2019Volume">
+            <Language ID="en-us" />
+            <ExcludeApp ID="Access" />
+            <ExcludeApp ID="Groove" />
+            <ExcludeApp ID="Lync" />
+            <ExcludeApp ID="OneDrive" />
+            <ExcludeApp ID="OneNote" />
+            <ExcludeApp ID="Outlook" />
+            <ExcludeApp ID="Publisher" />
+            <ExcludeApp ID="Teams" />
+        </Product>
+    </Add>
+    <Property Name="AUTOACTIVATE" Value="1" />
+    <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+    <Property Name="SharedComputerLicensing" Value="0" />
+</Configuration> 

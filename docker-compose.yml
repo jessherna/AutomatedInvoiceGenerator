@@ -1,7 +1,18 @@
 version: '3.8'
+
 services:
   app:
     build: .
     volumes:
       - .:/app
-    command: pytest --maxfail=1 -q
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: python sample_invoice.py
+
+  test:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: pytest -v

@@ -5,15 +5,42 @@ import invoice
 
 def test_generate_all_invokes_subroutines(tmp_path, monkeypatch):
     # Arrange: copy sample orders file
-    sample_src = Path("tests/data/orders_sample.xlsx")
-    sample_dst = tmp_path / "orders_sample.xlsx"
+    sample_src = Path("tests/data/orders_sample_with_id.xlsx")
+    sample_dst = tmp_path / "orders_sample_with_id.xlsx"
     shutil.copy(sample_src, sample_dst)
 
-    # Stub LoadOrders to return 3 “orders” with OrderID & Email
+    # Stub LoadOrders to return 3 "orders" with OrderID & Email
     orders_stub = [
-        {"OrderID": "1001", "Email": "a@b.com"},
-        {"OrderID": "1002", "Email": "c@d.com"},
-        {"OrderID": "1003", "Email": "e@f.com"},
+        {
+            "OrderID": "1001",
+            "Email": "a@b.com",
+            "CustomerID": "CUST001",
+            "CustomerName": "Customer One",
+            "ItemID": "ITEM001",
+            "Qty": 1,
+            "Price": 100.00,
+            "ItemName": "Test Item 1"
+        },
+        {
+            "OrderID": "1002",
+            "Email": "c@d.com",
+            "CustomerID": "CUST002",
+            "CustomerName": "Customer Two",
+            "ItemID": "ITEM002",
+            "Qty": 2,
+            "Price": 200.00,
+            "ItemName": "Test Item 2"
+        },
+        {
+            "OrderID": "1003",
+            "Email": "e@f.com",
+            "CustomerID": "CUST003",
+            "CustomerName": "Customer Three",
+            "ItemID": "ITEM003",
+            "Qty": 3,
+            "Price": 300.00,
+            "ItemName": "Test Item 3"
+        }
     ]
     monkeypatch.setattr(invoice, "LoadOrders", lambda path: orders_stub)
 
@@ -23,7 +50,7 @@ def test_generate_all_invokes_subroutines(tmp_path, monkeypatch):
     # Stub FormatInvoice
     def fake_format(order):
         counts["fmt"] += 1
-        return f"wb_{order['OrderID']}"
+        return f"wb_{order.get('OrderID', '')}"
     monkeypatch.setattr(invoice, "FormatInvoice", fake_format)
 
     # Stub ExportInvoice

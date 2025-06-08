@@ -156,11 +156,11 @@ for order in orders:
 
 ## Screenshots
 
-### Email Configuration
-![Email Configuration](../screenshots/test-email.png)
+### Sample Email When Invoice is Sent
+![Email Sample](../screenshots/test-email.png)
 
-### Password Setup
-![Password Setup](../screenshots/test-pass.png)
+### Pass All Tests
+![Pass Tests](../screenshots/test-pass.png)
 
 ### Sample Invoice Generation
 ![Sample Invoice](../screenshots/execute_sample-invoice.png)

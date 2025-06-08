@@ -45,14 +45,6 @@ venv.bak/
 .ipynb_checkpoints
 *.ipynb
 
-# Project specific
-screenshots/
-*.pdf
-*.xlsx
-*.xls
-po_counter.txt
-*.log
-
 # Windows
 Thumbs.db
 ehthumbs.db

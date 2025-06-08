@@ -94,7 +94,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Here's an overview of the application's components and their interactions:
 
-![Component Diagram](screenshots/component_diagram.png)
+![Component Diagram](docs\assets\component_diagram.png)
 
 ## Getting Started
 
